@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.learn.easycalculator'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.learn.easycalculator"
