@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import  org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+
 import com.google.android.material.button.MaterialButton;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -43,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         assignId(button0,R.id.button_zero);
         assignId(buttonDot,R.id.button_dot);
         assignId(buttonEquals,R.id.button_equals);
+
+
+
     }
 
     void assignId(MaterialButton btn, int id){
@@ -52,6 +58,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        MaterialButton button = (MaterialButton) view;
+        String buttonText = button.getText().toString();
+        String dataToCalculate = solutionTv.getText().toString();
 
+        if(buttonText.equals("AC")){
+            solutionTv.setText("");
+            resultTv.setText("0");
+            return;
+        }
+        if(buttonText.equals("=")){
+            solutionTv.setText(dataToCalculate);
+            return;
+        }
+
+        if (buttonText.equals("C")){
+            dataToCalculate = dataToCalculate.substring(0,dataToCalculate.length()-1);
+        }else{
+            dataToCalculate = dataToCalculate+buttonText;
+        }
+
+        solutionTv.setText(dataToCalculate);
+
+        String finalResult = getResult(dataToCalculate);
+
+        if (!finalResult.equals("err")){
+            resultTv.setText(finalResult);
+        }
+
+    }
+
+    String getResult(String data){
+        try {
+            Context context = Context.enter();
+            context.setOptimizationLevel(-1);
+            Scriptable scriptable = context.initStandardObjects();
+            String finalresult = context.evaluateString(scriptable,data,"Javascript",1,null).toString();
+            if(finalresult.endsWith(".0")){
+                finalresult = finalresult.replace(".0","");
+            }
+            return finalresult;
+        }catch (Exception e){
+            return "err";
+        }
     }
 }
